@@ -49,6 +49,7 @@ func (r *secureRequest) SetMessage(request protocol.Request) (err error) {
 	}
 
 	r.MessageBody = string(j)
+	log.Errorf("message: %s, signature: %s", r.MessageBody, r.Signature)
 
 	return
 }
@@ -96,6 +97,7 @@ func (r *secureRequest) Valid() bool {
 		return false
 	}
 
+	log.Errorf("message: %s, signature: %s, certname: %s", r.MessageBody, r.Signature, certname)
 	if !r.security.PrivilegedVerifyStringSignature(r.MessageBody, sig, certname) {
 		invalidCtr.Inc()
 		return false
