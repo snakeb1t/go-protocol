@@ -48,8 +48,8 @@ func (r *secureRequest) SetMessage(request protocol.Request) (err error) {
 		r.Signature = base64.StdEncoding.EncodeToString(signature)
 	}
 
-	r.MessageBody = string(j)
-	log.Errorf("message: %s, signature: %s", r.MessageBody, r.Signature)
+	r.MessageBody = j
+	log.Errorf("message: %s, signature: %s, checksum: %s, altChecksum: %s", r.MessageBody, r.Signature, r.security.ChecksumString(j), r.security.ChecksumString(string(j)))
 
 	return
 }
@@ -97,7 +97,7 @@ func (r *secureRequest) Valid() bool {
 		return false
 	}
 
-	log.Errorf("message: %s, signature: %s, certname: %s", r.MessageBody, r.Signature, certname)
+	log.Errorf("message: %s, signature: %s, certname: %s, checksum: %s", r.MessageBody, r.Signature, certname, r.security.ChecksumString(r.MessageBody))
 	if !r.security.PrivilegedVerifyStringSignature(r.MessageBody, sig, certname) {
 		invalidCtr.Inc()
 		return false
